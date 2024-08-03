@@ -1,0 +1,64 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4 my-5">Repository List</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <table class="table table-dark table-hover text-start">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>City</th>
+                            <th>View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model){
+                        <tr>
+                            <td>@user.Name</td>
+                            <td>@user.Username</td>
+                            <td>@user.Email</td>
+                            <td>@user.Address.City</td>
+                            <td>
+                                <button class="btn btn-outline-warning viewInfo" data-id="@user.Id">View</button>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <div id="partialViewContainer"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+        $('.viewInfo').click(function () {
+            var id = $(this).data('id')
+            $.ajax({
+                url: '@Url.Action("Info")',
+                type: 'GET',
+                data: {
+                    id: parseInt(id)
+                },
+                success: function (result) {
+                    $('#partialViewContainer').html(result);
+                },
+                error: function () {
+                    $('#partialViewContainer').test("something went wrong!");
+                    alert('Error loading partial view.');
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,93 @@
+<style>
+    /* Simple loader styling */
+    .loader {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top: 4px solid #3498db;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+    }
+</style>
+
+<div class="info">
+    <table class="table table-dark table-hover text-start">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Model.Name</td>
+                <td>@Model.Email</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="form mt-2" id="form">
+    <div class="row mt-2">
+        <div class="col-12">
+            <form method="POST" asp-action="Confirm" id="myForm">
+                <!-- Change the action URL as needed -->
+                @Html.AntiForgeryToken()
+                <div class="row">
+                    <input type="hidden" name="Id" value="@Model.Id">
+
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="Name">Name</label>
+                            <input type="text" name="Name" class="form-control" id="Name">
+                            <span class="text-danger"></span> <!-- Validation message placeholder -->
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="Email">Email</label>
+                            <input type="email" name="Email" class="form-control" id="Email">
+                            <span class="text-danger"></span> <!-- Validation message placeholder -->
+                        </div>
+                    </div>
+
+                </div>
+                <div class="my-2 justify-content-between">
+                    <input type="submit" class="btn btn-primary" value="Submit" />
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <div class="row justify-content-center mt-2" id="payInfo">
+        @* <div class="loader mt-5" id="loader"></div> *@
+    </div>
+</div>
+
+    <script>
+        $(document).ready(function() {
+            $('#myForm').submit(function(event) {
+                event.preventDefault(); // Prevent the default form submission
+                
+                // Show loader
+                $('#payInfo').html('<div class="loader mt-5" id="loader"></div>');
+                
+                var form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    type: form.attr('method'),
+                    data: form.serialize(),
+                    success: function(result) {
+                        $('#payInfo').html(result); // Update partial view container
+                    },
+                    error: function() {
+                        $('#payInfo').html("Something went wrong!");
+                    },
+                    complete: function() {
+                    }
+                });
+            });
+        });
+    </script>
