@@ -20,8 +20,8 @@
         </thead>
         <tbody>
             <tr>
-                <td>@Model.Name</td>
-                <td>@Model.Email</td>
+                <td>@Model.UserInfo.Name</td>
+                <td>@Model.UserInfo.Email</td>
             </tr>
         </tbody>
     </table>
@@ -30,20 +30,21 @@
 <div class="form mt-2" id="form">
     <div class="row mt-2">
         <div class="col-12">
-            <form method="POST" asp-action="Confirm" id="myForm">
+            <form method="POST" asp-action="Submited" id="myForm">
                 <!-- Change the action URL as needed -->
                 @Html.AntiForgeryToken()
                 <div class="row">
-                    <input type="hidden" name="Id" value="@Model.Id">
+                    <input type="hidden" name="Id" value="@Model.UserInfo.Id">
 
-                    <div class="col-12">
-                        <div class="form-group">
-                            <label for="Amount">Amount</label>
-                            <input type="text" name="Amount" class="form-control" id="Amount">
-                            <span class="text-danger"></span> <!-- Validation message placeholder -->
-                        </div>
-                    </div>
-
+                    @foreach(var filed in @Model.FormFileds){
+                                        <div class="col-sm-12 col-md-6">
+                                            <div class="form-group">
+                                                <label for="@filed.FieldName">@filed.FieldName</label>
+                                                <input type="@filed.FieldType" name="@filed.FieldName" class="form-control" id="@filed.FieldName">
+                                                <span class="text-danger"></span> <!-- Validation message placeholder -->
+                                            </div>
+                                        </div>
+                    }
                 </div>
                 <div class="my-2 justify-content-between">
                     <input type="submit" class="btn btn-primary" value="Submit" />
@@ -65,12 +66,22 @@
                 
                 // Show loader
                 $('#payInfo').html('<div class="loader mt-5" id="loader"></div>');
-                
+
+
+                var formData = $(this).serializeArray();
+                var data = {};
+
+                $.each(formData, function () {
+                    data[this.name] = this.value;
+                });
+
                 var form = $(this);
                 $.ajax({
                     url: form.attr('action'),
                     type: form.attr('method'),
-                    data: form.serialize(),
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(data),
+
                     success: function(result) {
                         $('#payInfo').html(result); // Update partial view container
                     },
